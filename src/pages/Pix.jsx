@@ -44,6 +44,10 @@ const Pix = ({ id, body, email, name, date_posted, imageUrl, images, db }) => {
     const auth = getAuth();
     setCurrentUserEmail(auth.currentUser.email);
   }, []);
+  
+  useEffect(() => {
+  setEditedImageUrl(imageUrl);
+}, [imageUrl]);
 
   const handleBodyChange = (event) => {
     setEditedBody(event.target.value);
