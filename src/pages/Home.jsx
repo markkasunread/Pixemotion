@@ -34,7 +34,7 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { storage } from "./firebaseConfig";
-import { ref, uploadBytes, getDownloadURL, listAll } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { v4 } from "uuid";
 import { useNavigate } from "react-router-dom";
 
@@ -45,20 +45,12 @@ function Home() {
   const [pix, setPix] = useState("");
   const [pixs, setPixs] = useState([]);
   const [imageUpload, setImageUpload] = useState(null);
-  const [imageList, setImageList] = useState([]);
   const [buttonLoading, setButtonLoading] = useState(false);
   let navigate = useNavigate();
-  const imageListRef = ref(storage, "images/");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const imageRefs = await listAll(imageListRef);
-        const urls = await Promise.all(
-          imageRefs.items.map((item) => getDownloadURL(item))
-        );
-        setImageList(urls);
-
         const authStateListener = onAuthStateChanged(auth, (user) => {
           if (user) {
             setUserProfile({
@@ -109,8 +101,6 @@ function Home() {
         };
 
         await addDoc(collection(db, "pixs"), pixData);
-
-        setImageList((prevList) => [...prevList, imageUrl]);
         setImageUpload(null);
         setPix("");
 
@@ -276,8 +266,6 @@ function Home() {
               name={pixRecord.name}
               date_posted={pixRecord.date_posted.toDate().toString()}
               imageUrl={pixRecord.imageUrl}
-              images={imageList}
-              imageIndex={index}
               db={db}
             />
           ))}
